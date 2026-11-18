@@ -1,3 +1,7 @@
+import { useEffect, useState } from "react";
+import { getTodos } from "../api/todoApi";
+import type { Todo } from "../types/todo";
+
 import {
     CheckCircle2,
     CircleDot,
@@ -6,6 +10,41 @@ import {
 } from "lucide-react";
 
 const Dashboard = () => {
+
+    const [todos, setTodos] = useState<Todo[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
+
+    useEffect(() => {
+        const fetchTodos = async () => {
+            try {
+                setLoading(true);
+                setError("");
+
+                const data = await getTodos();
+                setTodos(data);
+            } catch (error) {
+                console.error("Failed to fetch dashboard tasks:", error);
+                setError("Unable to load dashboard statistics.");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchTodos();
+    }, []);
+
+    const totalTasks = todos.length;
+
+    const completedTasks = todos.filter((todo) => todo.done).length;
+
+    const activeTasks = totalTasks - completedTasks;
+
+    const completionRate =
+        totalTasks > 0
+            ? Math.round((completedTasks / totalTasks) * 100)
+            : 0;
+
     return (
         <div>
             <div className="mb-8">
@@ -17,6 +56,11 @@ const Dashboard = () => {
                     Manage your tasks and track your productivity.
                 </p>
             </div>
+            {error && (
+                <div className="mb-6 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-600">
+                    {error}
+                </div>
+            )}
 
             {/* Statistics Cards */}
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
@@ -30,7 +74,7 @@ const Dashboard = () => {
                     </div>
 
                     <h3 className="mt-4 text-3xl font-bold text-slate-800">
-                        0
+                        {loading ? "..." : totalTasks}
                     </h3>
                 </div>
 
@@ -43,7 +87,7 @@ const Dashboard = () => {
                     </div>
 
                     <h3 className="mt-4 text-3xl font-bold text-slate-800">
-                        0
+                        {loading ? "..." : activeTasks}
                     </h3>
                 </div>
 
@@ -56,7 +100,7 @@ const Dashboard = () => {
                     </div>
 
                     <h3 className="mt-4 text-3xl font-bold text-slate-800">
-                        0
+                        {loading ? "..." : completedTasks}
                     </h3>
                 </div>
 
@@ -69,7 +113,7 @@ const Dashboard = () => {
                     </div>
 
                     <h3 className="mt-4 text-3xl font-bold text-slate-800">
-                        0%
+                        {loading ? "..." : `${completionRate}%`}
                     </h3>
                 </div>
 
