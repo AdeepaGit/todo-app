@@ -35,4 +35,18 @@ const startServer = async () => {
     });
 };
 
+// Global error handler
+app.use((error, req, res, next) => {
+    console.error("Server error:", error);
+
+    if (error instanceof SyntaxError && error.status === 400 && "body" in error) {
+        return res.status(400).json({
+            message: "Invalid JSON request body"
+        });
+    }
+
+    res.status(500).json({
+        message: "Internal server error"
+    });
+});
 startServer();
