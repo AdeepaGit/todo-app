@@ -1,4 +1,6 @@
 const Todo = require("../models/Todo");
+const mongoose = require("mongoose");
+const validateTodo = require("../utils/validateTodo");
 
 // GET: Retrieve all TODOs
 const getTodos = async (req, res) => {
@@ -6,10 +8,12 @@ const getTodos = async (req, res) => {
         const todos = await Todo.find().sort({ createdAt: -1 });
 
         res.status(200).json(todos);
+
     } catch (error) {
+        console.error("Get TODOs error:", error);
+
         res.status(500).json({
-            message: "Failed to retrieve TODOs",
-            error: error.message
+            message: "Failed to retrieve TODOs"
         });
     }
 };
@@ -17,24 +21,29 @@ const getTodos = async (req, res) => {
 // POST: Create a new TODO
 const createTodo = async (req, res) => {
     try {
-        const { title, description } = req.body;
+        const validation = validateTodo(req.body);
 
-        if (!title || !title.trim()) {
+        if (!validation.isValid) {
             return res.status(400).json({
-                message: "Title is required"
+                message: "Validation failed",
+                errors: validation.errors
             });
         }
 
+        const { title, description } = req.body;
+
         const todo = await Todo.create({
-            title,
-            description
+            title: title.trim(),
+            description: description?.trim() || ""
         });
 
         res.status(201).json(todo);
+
     } catch (error) {
-        res.status(400).json({
-            message: "Failed to create TODO",
-            error: error.message
+        console.error("Create TODO error:", error);
+
+        res.status(500).json({
+            message: "Failed to create TODO"
         });
     }
 };
@@ -42,19 +51,30 @@ const createTodo = async (req, res) => {
 // PUT: Update a TODO
 const updateTodo = async (req, res) => {
     try {
-        const { title, description } = req.body;
-
-        if (!title || !title.trim()) {
+        // Validate MongoDB ObjectId
+        if (!mongoose.isValidObjectId(req.params.id)) {
             return res.status(400).json({
-                message: "Title is required"
+                message: "Invalid TODO ID"
             });
         }
+
+        // Validate request data
+        const validation = validateTodo(req.body);
+
+        if (!validation.isValid) {
+            return res.status(400).json({
+                message: "Validation failed",
+                errors: validation.errors
+            });
+        }
+
+        const { title, description } = req.body;
 
         const todo = await Todo.findByIdAndUpdate(
             req.params.id,
             {
-                title,
-                description
+                title: title.trim(),
+                description: description?.trim() || ""
             },
             {
                 new: true,
@@ -69,10 +89,12 @@ const updateTodo = async (req, res) => {
         }
 
         res.status(200).json(todo);
+
     } catch (error) {
-        res.status(400).json({
-            message: "Failed to update TODO",
-            error: error.message
+        console.error("Update TODO error:", error);
+
+        res.status(500).json({
+            message: "Failed to update TODO"
         });
     }
 };
@@ -80,6 +102,12 @@ const updateTodo = async (req, res) => {
 // PATCH: Toggle TODO completion status
 const toggleTodoDone = async (req, res) => {
     try {
+        if (!mongoose.isValidObjectId(req.params.id)) {
+            return res.status(400).json({
+                message: "Invalid TODO ID"
+            });
+        }
+
         const todo = await Todo.findById(req.params.id);
 
         if (!todo) {
@@ -93,10 +121,12 @@ const toggleTodoDone = async (req, res) => {
         await todo.save();
 
         res.status(200).json(todo);
+
     } catch (error) {
-        res.status(400).json({
-            message: "Failed to toggle TODO status",
-            error: error.message
+        console.error("Toggle TODO error:", error);
+
+        res.status(500).json({
+            message: "Failed to toggle TODO status"
         });
     }
 };
@@ -104,6 +134,12 @@ const toggleTodoDone = async (req, res) => {
 // DELETE: Remove a TODO
 const deleteTodo = async (req, res) => {
     try {
+        if (!mongoose.isValidObjectId(req.params.id)) {
+            return res.status(400).json({
+                message: "Invalid TODO ID"
+            });
+        }
+
         const todo = await Todo.findByIdAndDelete(req.params.id);
 
         if (!todo) {
@@ -115,10 +151,12 @@ const deleteTodo = async (req, res) => {
         res.status(200).json({
             message: "TODO deleted successfully"
         });
+
     } catch (error) {
-        res.status(400).json({
-            message: "Failed to delete TODO",
-            error: error.message
+        console.error("Delete TODO error:", error);
+
+        res.status(500).json({
+            message: "Failed to delete TODO"
         });
     }
 };
