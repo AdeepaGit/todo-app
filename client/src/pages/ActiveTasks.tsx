@@ -13,8 +13,7 @@ import {
 } from "../api/todoApi";
 
 import TodoItem from "../components/TodoItem";
-
-
+import { getApiErrorMessage } from "../utils/apiError";
 
 const Toast = Swal.mixin({
     toast: true,
@@ -42,7 +41,13 @@ const ActiveTasks = () => {
             setTodos(data.filter((todo) => !todo.done));
         } catch (error) {
             console.error("Failed to fetch active tasks:", error);
-            setError("Unable to load active tasks. Please try again.");
+
+            setError(
+                getApiErrorMessage(
+                    error,
+                    "Unable to load active tasks. Please try again."
+                )
+            );
         } finally {
             setLoading(false);
         }
@@ -84,7 +89,10 @@ const ActiveTasks = () => {
             Swal.fire({
                 icon: "error",
                 title: "Error!",
-                text: "Unable to update task. Please try again.",
+                text: getApiErrorMessage(
+                    error,
+                    "Unable to update task. Please try again."
+                ),
                 confirmButtonColor: "#2563eb",
             });
         }
@@ -111,7 +119,10 @@ const ActiveTasks = () => {
             Swal.fire({
                 icon: "error",
                 title: "Error!",
-                text: "Unable to update task status.",
+                text: getApiErrorMessage(
+                    error,
+                    "Unable to update task status."
+                ),
                 confirmButtonColor: "#2563eb",
             });
         }
@@ -149,7 +160,10 @@ const ActiveTasks = () => {
             Swal.fire({
                 icon: "error",
                 title: "Error!",
-                text: "Unable to delete task.",
+                text: getApiErrorMessage(
+                    error,
+                    "Unable to delete task."
+                ),
                 confirmButtonColor: "#2563eb",
             });
         }

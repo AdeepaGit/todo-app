@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Plus, ListTodo, RefreshCw } from "lucide-react";
 import Swal from "sweetalert2";
 import type { Todo } from "../types/todo";
+import { getApiErrorMessage } from "../utils/apiError";
 
 import {
     getTodos,
@@ -40,7 +41,12 @@ const AllTasks = () => {
             setTodos(data);
         } catch (error) {
             console.error("Failed to fetch tasks:", error);
-            setError("Unable to load tasks. Please try again.");
+            setError(
+                getApiErrorMessage(
+                    error,
+                    "Unable to load tasks. Please try again."
+                )
+            );
         } finally {
             setLoading(false);
         }
@@ -95,7 +101,10 @@ const AllTasks = () => {
             Swal.fire({
                 icon: "error",
                 title: "Error!",
-                text: "Unable to save task. Please try again.",
+                text: getApiErrorMessage(
+                    error,
+                    "Unable to save task. Please try again."
+                ),
                 confirmButtonColor: "#2563eb",
             });
         }
@@ -123,10 +132,14 @@ const AllTasks = () => {
 
         } catch (error) {
             console.error("Failed to update task:", error);
+
             Swal.fire({
                 icon: "error",
                 title: "Error!",
-                text: "Unable to update task. Please try again.",
+                text: getApiErrorMessage(
+                    error,
+                    "Unable to update task. Please try again."
+                ),
                 confirmButtonColor: "#2563eb",
             });
         }
@@ -166,7 +179,10 @@ const AllTasks = () => {
 
             Swal.fire({
                 title: "Error!",
-                text: "Unable to delete the task. Please try again.",
+                text: getApiErrorMessage(
+                    error,
+                    "Unable to delete the task. Please try again."
+                ),
                 icon: "error",
                 confirmButtonColor: "#2563eb",
             });

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { getTodos } from "../api/todoApi";
 import type { Todo } from "../types/todo";
 import { Link } from "react-router-dom";
+import { getApiErrorMessage } from "../utils/apiError";
 
 import {
     CheckCircle2,
@@ -16,22 +17,28 @@ const Dashboard = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
+    const fetchTodos = async () => {
+        try {
+            setLoading(true);
+            setError("");
+
+            const data = await getTodos();
+            setTodos(data);
+        } catch (error) {
+            console.error("Failed to fetch dashboard tasks:", error);
+
+            setError(
+                getApiErrorMessage(
+                    error,
+                    "Unable to load dashboard statistics."
+                )
+            );
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
-        const fetchTodos = async () => {
-            try {
-                setLoading(true);
-                setError("");
-
-                const data = await getTodos();
-                setTodos(data);
-            } catch (error) {
-                console.error("Failed to fetch dashboard tasks:", error);
-                setError("Unable to load dashboard statistics.");
-            } finally {
-                setLoading(false);
-            }
-        };
-
         fetchTodos();
     }, []);
 
@@ -68,11 +75,22 @@ const Dashboard = () => {
                 </p>
             </div>
             {error && (
-                <div className="mb-6 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-600">
-                    {error}
+                <div
+                    role="alert"
+                    className="mb-6 flex items-center justify-between rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-600"
+                >
+                    <span>{error}</span>
+
+                    <button
+                        type="button"
+                        onClick={fetchTodos}
+                        disabled={loading}
+                        className="font-semibold underline disabled:opacity-50"
+                    >
+                        Retry
+                    </button>
                 </div>
             )}
-
             {/* Statistics Cards */}
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
 
@@ -233,8 +251,8 @@ const Dashboard = () => {
                                 {/* Task Information */}
                                 <div className="min-w-0">
                                     <h4 className={`font-medium ${todo.done
-                                            ? "text-slate-400 line-through"
-                                            : "text-slate-800"
+                                        ? "text-slate-400 line-through"
+                                        : "text-slate-800"
                                         }`}>
                                         {todo.title}
                                     </h4>
@@ -253,8 +271,8 @@ const Dashboard = () => {
                                 {/* Task Status */}
                                 <span
                                     className={`w-fit rounded-full px-3 py-1 text-xs font-medium ${todo.done
-                                            ? "bg-green-50 text-green-700"
-                                            : "bg-blue-50 text-blue-700"
+                                        ? "bg-green-50 text-green-700"
+                                        : "bg-blue-50 text-blue-700"
                                         }`}
                                 >
                                     {todo.done ? "Completed" : "Active"}

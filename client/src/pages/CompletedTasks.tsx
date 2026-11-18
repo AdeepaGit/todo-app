@@ -4,6 +4,7 @@ import { CheckCircle2, RefreshCw } from "lucide-react";
 import Swal from "sweetalert2";
 import TodoForm from "../components/TodoForm";
 import type { Todo } from "../types/todo";
+import { getApiErrorMessage } from "../utils/apiError";
 
 import {
     getTodos,
@@ -39,7 +40,13 @@ const CompletedTasks = () => {
             setTodos(data.filter((todo) => todo.done));
         } catch (error) {
             console.error("Failed to fetch completed tasks:", error);
-            setError("Unable to load completed tasks. Please try again.");
+
+            setError(
+                getApiErrorMessage(
+                    error,
+                    "Unable to load completed tasks. Please try again."
+                )
+            );
         } finally {
             setLoading(false);
         }
@@ -74,7 +81,10 @@ const CompletedTasks = () => {
             Swal.fire({
                 icon: "error",
                 title: "Error!",
-                text: "Unable to update task. Please try again.",
+                text: getApiErrorMessage(
+                    error,
+                    "Unable to update task. Please try again."
+                ),
                 confirmButtonColor: "#2563eb",
             });
         }
@@ -100,7 +110,10 @@ const CompletedTasks = () => {
             Swal.fire({
                 icon: "error",
                 title: "Error!",
-                text: "Unable to update task status. Please try again.",
+                text: getApiErrorMessage(
+                    error,
+                    "Unable to update task status. Please try again."
+                ),
                 confirmButtonColor: "#2563eb",
             });
         }
@@ -137,7 +150,10 @@ const CompletedTasks = () => {
             Swal.fire({
                 icon: "error",
                 title: "Error!",
-                text: "Unable to delete task. Please try again.",
+                text: getApiErrorMessage(
+                    error,
+                    "Unable to delete task. Please try again."
+                ),
                 confirmButtonColor: "#2563eb",
             });
         }

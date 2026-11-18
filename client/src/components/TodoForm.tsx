@@ -20,6 +20,7 @@ const TodoForm = ({
 }: TodoFormProps) => {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
+    const [titleError, setTitleError] = useState("");
 
     useEffect(() => {
         if (editingTodo) {
@@ -29,19 +30,32 @@ const TodoForm = ({
             setTitle("");
             setDescription("");
         }
+
+        setTitleError("");
     }, [editingTodo]);
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
         if (!title.trim()) {
+            setTitleError("Task title is required.");
             return;
         }
+
+        setTitleError("");
 
         onSubmit({
             title: title.trim(),
             description: description.trim(),
         });
+    };
+
+    const handleTitleChange = (value: string) => {
+        setTitle(value);
+
+        if (value.trim()) {
+            setTitleError("");
+        }
     };
 
     return (
@@ -77,11 +91,25 @@ const TodoForm = ({
                         id="title"
                         type="text"
                         value={title}
-                        onChange={(event) => setTitle(event.target.value)}
+                        onChange={(event) => handleTitleChange(event.target.value)}
                         placeholder="Enter task title"
                         required
-                        className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                        aria-invalid={!!titleError}
+                        aria-describedby={titleError ? "title-error" : undefined}
+                        className={`w-full rounded-lg border px-4 py-3 text-sm outline-none transition focus:ring-2 ${titleError
+                                ? "border-red-500 focus:border-red-500 focus:ring-red-100"
+                                : "border-slate-300 focus:border-blue-500 focus:ring-blue-100"
+                            }`}
                     />
+
+                    {titleError && (
+                        <p
+                            id="title-error"
+                            className="mt-1 text-sm text-red-600"
+                        >
+                            {titleError}
+                        </p>
+                    )}
                 </div>
 
                 {/* Description */}
@@ -115,8 +143,7 @@ const TodoForm = ({
 
                     <button
                         type="submit"
-                        disabled={!title.trim()}
-                        className="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+                        className="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-blue-700"
                     >
                         {editingTodo ? "Update Task" : "Create Task"}
                     </button>
