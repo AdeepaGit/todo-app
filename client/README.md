@@ -1,75 +1,147 @@
-# React + TypeScript + Vite
+# TaskFlow – Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Overview
 
-Currently, two official plugins are available:
+TaskFlow is a responsive TODO management application built with React and TypeScript. It provides a simple dashboard for managing tasks, tracking progress, and organizing tasks based on their completion status.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+The frontend communicates with a Node.js and Express REST API and retrieves task data from MongoDB through the backend.
 
-## React Compiler
+## Technologies Used
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **React** – UI development
+- **TypeScript** – Type-safe JavaScript
+- **Vite** – Frontend development server and build tool
+- **Tailwind CSS** – Responsive UI styling
+- **React Router DOM** – Client-side routing
+- **Axios** – HTTP requests and API communication
+- **Lucide React** – Icons
+- **SweetAlert2** – Confirmation dialogs and notifications
 
-## Expanding the ESLint configuration
+## Features
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- Dashboard with task statistics and completion progress.
+- View all tasks.
+- Filter active and completed tasks.
+- Create tasks with a title and optional description.
+- Edit existing tasks.
+- Mark tasks as completed or active.
+- Delete tasks with confirmation.
+- Required title and whitespace validation.
+- User-friendly API error messages.
+- Loading, error, and empty states.
+- Retry functionality when API requests fail.
+- Responsive design for desktop, tablet, and mobile devices.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Project Structure
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```text
+client/
+├── public/
+├── src/
+│   ├── api/
+│   │   └── todoApi.ts
+│   ├── components/
+│   │   ├── Sidebar.tsx
+│   │   ├── TodoItem.tsx
+│   │   └── TodoForm.tsx
+│   ├── layouts/
+│   │   └── DashboardLayout.tsx
+│   ├── pages/
+│   │   ├── Dashboard.tsx
+│   │   ├── AllTasks.tsx
+│   │   ├── ActiveTasks.tsx
+│   │   └── CompletedTasks.tsx
+│   ├── types/
+│   │   └── todo.ts
+│   ├── utils/
+│   │   └── apiError.ts
+│   ├── App.tsx
+│   ├── main.tsx
+│   └── index.css
+├── index.html
+├── package.json
+└── vite.config.ts
 ```
 
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
+## Prerequisites
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Make sure you have the following installed:
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- Node.js
+- npm
+- A running TaskFlow backend API
 
+## Installation
+
+1. Navigate to the frontend directory:
+
+```bash
+cd client
 ```
+
+2. Install dependencies:
+
+```bash
+npm install
+```
+
+## Running the Application
+
+Start the development server:
+
+```bash
+npm run dev
+```
+
+Vite will display the local development URL in the terminal. Open that URL in your browser.
+
+## Backend API Configuration
+
+The frontend communicates with the backend API using Axios.
+
+The API client is configured in:
+
+`src/api/todoApi.ts`
+
+Current API base URL:
+
+```typescript
+baseURL: "http://localhost:5000/api/todos"
+```
+
+Make sure the backend server is running on port `5000` before using the application.
+
+## Available Pages
+
+| Page            | Route              | Description                                                     |
+| --------------- | ------------------ | --------------------------------------------------------------- |
+| Dashboard       | `/`                | Displays task statistics, completion progress, and recent tasks |
+| All Tasks       | `/tasks`           | Displays and manages all tasks                                  |
+| Active Tasks    | `/tasks/active`    | Displays incomplete tasks                                       |
+| Completed Tasks | `/tasks/completed` | Displays completed tasks                                        |
+
+## Assumptions and Limitations
+
+- The frontend expects the backend API to be available at `http://localhost:5000/api/todos`.
+- Task data is managed and persisted through the backend and MongoDB database.
+- The application does not currently include user authentication.
+- The application is designed as a single-user TODO management system.
+- The development server uses Vite.
+
+## Building for Production
+
+To create a production build:
+
+```bash
+npm run build
+```
+
+To preview the production build locally:
+
+```bash
+npm run preview
+```
+
+## Author
+
+TaskFlow – TODO Management Application
